@@ -115,6 +115,13 @@ export interface PresetBundle {
     submission_presets: SubmissionPreset[];
 }
 
+export interface ReviewPromptBundle {
+    agentBSystemInstruction: string;
+    agentBPrompt: string;
+    agentASystemInstruction: string;
+    agentAPromptTemplate: string;
+}
+
 export interface ValidationIssue {
     field: string;
     message: string;
@@ -364,4 +371,3 @@ export interface SessionDetail {
     steps: SessionSteps;
     rebuttal: RebuttalInfo;
 }
-

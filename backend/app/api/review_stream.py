@@ -7,6 +7,12 @@ from typing import AsyncGenerator, Dict, Any
 
 from app.services.gemini_client import GeminiClient
 from app.services.llm_client import create_llm_client, LLMClient
+from app.services.review_prompts import (
+    AGENT_A_INSTRUCTION as SHARED_AGENT_A_INSTRUCTION,
+    AGENT_B_INSTRUCTION as SHARED_AGENT_B_INSTRUCTION,
+    build_agent_a_prompt,
+    build_agent_b_prompt,
+)
 from app.utils.sse import sse_progress, sse_result, sse_error
 from app.schemas.progress import ReviewStreamRequest
 from app.logger import get_logger
@@ -19,77 +25,21 @@ router = APIRouter()
 class StreamingMultiAgentReviewer:
     """SSEストリーミング対応のマルチエージェントレビュワー"""
     
-    AGENT_A_INSTRUCTION = """あなたは倫理審査書類を作成するAIエージェントです。
-以下の役割を持ちます：
-- インフォームドコンセントの妥当性チェック
-- リスクと対策の整合性確認
-- 個人情報保護の適切性チェック
-- 除外基準の明確さ確認
-- 書類間の一貫性確保
-
-Agent B（倫理審査委員シミュレート）からの指摘を受けて、書類を改善してください。
-標準より厳しめの基準で書類を作成し、承認率を高めることが目標です。"""
-
-    AGENT_B_INSTRUCTION = """あなたは筑波大学の倫理審査委員会の委員をシミュレートするAIエージェントです。
-以下の視点で厳格に審査してください：
-- 研究計画の妥当性（目的・方法・仮説の論理的整合性）
-- 実験工程の安全性（危険な手順がないか）
-- 対象者保護（不当なリスクを負わせていないか）
-- 倫理的問題点（見落としがちな問題の指摘）
-
-特に以下の厳格審査基準（SR1-SR6）を確認してください：
-- SR1: リスク記述の網羅性
-- SR2: 対策の具体性
-- SR3: 緊急時対応
-- SR4: 除外基準の妥当性
-- SR5: 同意撤回手続き
-- SR6: 参加者保護"""
+    AGENT_A_INSTRUCTION = SHARED_AGENT_A_INSTRUCTION
+    AGENT_B_INSTRUCTION = SHARED_AGENT_B_INSTRUCTION
 
     def __init__(self, client: LLMClient):
         self.client = client
     
     async def agent_b_review(self, form_data: Dict[str, Any], research_plan: str) -> Dict[str, Any]:
         """Agent B: 倫理審査委員としてレビュー"""
-        prompt = f"""以下の倫理審査申請書を審査してください。
-
-# 研究計画
-{research_plan}
-
-# 申請書データ
-{form_data}
-
-# 出力形式（JSON）
-{{
-    "issues": [
-        {{
-            "id": "issue_1",
-            "category": "risk",
-            "severity": "major",
-            "description": "指摘内容",
-            "suggestion": "改善提案"
-        }}
-    ],
-    "summary": "総評"
-}}
-
-category: risk, consent, privacy, procedure, ethics のいずれか
-severity: critical, major, minor のいずれか"""
+        prompt = build_agent_b_prompt(form_data, research_plan)
 
         return await self.client.generate_json(prompt, self.AGENT_B_INSTRUCTION)
     
     async def agent_a_revise(self, form_data: Dict[str, Any], issues: list) -> Dict[str, Any]:
         """Agent A: 指摘を反映して修正"""
-        prompt = f"""以下の指摘事項を反映して、申請書データを修正してください。
-
-# 現在の申請書データ
-{form_data}
-
-# 指摘事項
-{issues}
-
-# 出力形式（JSON）
-修正後の申請書データ全体をJSON形式で出力してください。
-修正した箇所には "_revised": true を追加してください。"""
+        prompt = build_agent_a_prompt(form_data, issues)
 
         return await self.client.generate_json(prompt, self.AGENT_A_INSTRUCTION)
 

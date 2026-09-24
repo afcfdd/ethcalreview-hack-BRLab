@@ -13,6 +13,7 @@ import type {
     RebuttalSuggestions,
     SessionStatus,
     PresetBundle,
+    ReviewPromptBundle,
 } from '../types';
 
 // APIのベースURL
@@ -390,6 +391,27 @@ export const requestReview = async (
     return response.data;
 };
 
+export const getReviewPrompts = async (
+    researchPlan: string,
+    formData: Record<string, unknown>,
+): Promise<ReviewPromptBundle> => {
+    const response = await fastClient.post<{
+        agent_b_system_instruction: string;
+        agent_b_prompt: string;
+        agent_a_system_instruction: string;
+        agent_a_prompt_template: string;
+    }>('/api/review/prompts', {
+        research_plan: researchPlan,
+        form_data: formData,
+    });
+    return {
+        agentBSystemInstruction: response.data.agent_b_system_instruction,
+        agentBPrompt: response.data.agent_b_prompt,
+        agentASystemInstruction: response.data.agent_a_system_instruction,
+        agentAPromptTemplate: response.data.agent_a_prompt_template,
+    };
+};
+
 // ヘルスチェック（短いタイムアウト）
 
 export const checkHealth = async (): Promise<{ status: string }> => {
@@ -495,4 +517,3 @@ export const applyRebuttal = async (
 };
 
 export { createApiClient };
-

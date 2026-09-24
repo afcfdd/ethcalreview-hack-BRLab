@@ -7,6 +7,12 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 from app.services.gemini_client import GeminiClient
 from app.services.multi_agent import MultiAgentReviewer
+from app.services.review_prompts import (
+    AGENT_A_INSTRUCTION,
+    AGENT_B_INSTRUCTION,
+    build_agent_a_prompt_template,
+    build_agent_b_prompt,
+)
 from app.logger import get_logger
 
 logger = get_logger(__name__)
@@ -37,6 +43,25 @@ class ReviewResponse(BaseModel):
     issues: List[ReviewIssue]
     revised_data: Dict[str, Any]  # 修正後のデータ
     summary: str
+
+
+class ReviewPromptResponse(BaseModel):
+    """画面表示・外部AI貼り付け用のレビュー用プロンプト"""
+    agent_b_system_instruction: str
+    agent_b_prompt: str
+    agent_a_system_instruction: str
+    agent_a_prompt_template: str
+
+
+@router.post("/prompts", response_model=ReviewPromptResponse)
+async def get_review_prompts(request: ReviewRequest):
+    """APIキーを使わず、実際のマルチエージェントレビュー用プロンプトを返す。"""
+    return ReviewPromptResponse(
+        agent_b_system_instruction=AGENT_B_INSTRUCTION,
+        agent_b_prompt=build_agent_b_prompt(request.form_data, request.research_plan),
+        agent_a_system_instruction=AGENT_A_INSTRUCTION,
+        agent_a_prompt_template=build_agent_a_prompt_template(request.form_data),
+    )
 
 
 @router.post("", response_model=ReviewResponse)
@@ -70,4 +95,3 @@ async def run_multi_agent_review(
         logger.error(f"レビューAPI 失敗 ({elapsed:.2f}秒): {type(e).__name__}: {e}")
         logger.info("=" * 60)
         raise HTTPException(status_code=500, detail=str(e))
-

@@ -21,6 +21,7 @@ import { useSettings } from './hooks/useSettings';
 import { useSSE } from './hooks/useSSE';
 import { setApiKey, getSession, downloadDocumentsZip, reformatDocuments, getPresets, API_BASE_URL } from './api/client';
 import { DocumentEditor } from './components/DocumentEditor';
+import { ReviewPromptPanel } from './components/ReviewPromptPanel';
 import type { AnalysisResult, FormData, SessionDetail, PresetBundle, ValidationIssue } from './types';
 
 
@@ -133,6 +134,11 @@ function App() {
   const { settings, updateSettings, apiKey, isApiKeySet } = useSettings();
   const [currentStep, setCurrentStep] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
+  const [showReviewPrompt, setShowReviewPrompt] = useState(false);
+  const [reviewPromptPayload, setReviewPromptPayload] = useState<{
+    researchPlan: string;
+    formData: Record<string, unknown>;
+  } | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
@@ -288,15 +294,14 @@ function App() {
     });
   }, [apiKey, settings.llm?.provider, settings.llm?.model, analyzeSSE]);
 
-  // 書類生成ハンドラ
-  const handleGenerate = useCallback(async () => {
-    if (!analysisResult) return;
+  const buildGenerationFormData = useCallback((): FormData | null => {
+    if (!analysisResult) return null;
 
     // 謝礼計算: 設定の単価 × 所要時間 (budget.hourly_rate または reward.baseAmountPer60Min)
     const hourlyRate = settings.budget?.hourly_rate ?? settings.reward?.baseAmountPer60Min ?? 1230;
     const rewardAmount = Math.round(hourlyRate * (analysisResult.duration_minutes / 60));
 
-    const formData: FormData = {
+    return {
       research_plan: rawResearchInput,
       followupAnswers,
       title: analysisResult.research_title,
@@ -324,6 +329,25 @@ function App() {
       consentWithdrawalProcedure: '',
       dataHandlingOnWithdrawal: '',
     };
+  }, [analysisResult, settings, rawResearchInput, followupAnswers]);
+
+  const handleShowReviewPrompt = useCallback(() => {
+    const formData = buildGenerationFormData();
+    if (!formData) return;
+    setReviewPromptPayload({
+      researchPlan: rawResearchInput,
+      formData: {
+        ...(formData as unknown as Record<string, unknown>),
+        app_config: appConfig,
+      },
+    });
+    setShowReviewPrompt(true);
+  }, [appConfig, buildGenerationFormData, rawResearchInput]);
+
+  // 書類生成ハンドラ
+  const handleGenerate = useCallback(async () => {
+    const formData = buildGenerationFormData();
+    if (!formData) return;
 
     setCurrentStep(2);
     setGenerationIssues([]);
@@ -361,7 +385,7 @@ function App() {
         setCurrentStep(1); // 確認画面に戻る
       },
     });
-  }, [analysisResult, settings, apiKey, appConfig, generateSSE, rawResearchInput, followupAnswers]);
+  }, [apiKey, appConfig, buildGenerationFormData, generateSSE, settings]);
 
   // セッション選択ハンドラ
   const handleSelectSession = useCallback(async (sessionId: string) => {
@@ -1127,6 +1151,9 @@ function App() {
                     <Button variant="secondary" onClick={() => setCurrentStep(0)}>
                       戻る
                     </Button>
+                    <Button variant="secondary" onClick={handleShowReviewPrompt}>
+                      🧾 レビュー用プロンプトを表示
+                    </Button>
                     <Button
                       variant="primary"
                       size="lg"
@@ -1285,6 +1312,18 @@ function App() {
                 toast.success('設定を保存しました');
               }}
               onClose={() => setShowSettings(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showReviewPrompt && reviewPromptPayload && (
+        <div className="modal-overlay" onClick={() => setShowReviewPrompt(false)}>
+          <div className="modal modal-large" onClick={(e) => e.stopPropagation()}>
+            <ReviewPromptPanel
+              researchPlan={reviewPromptPayload.researchPlan}
+              formData={reviewPromptPayload.formData}
+              onClose={() => setShowReviewPrompt(false)}
             />
           </div>
         </div>

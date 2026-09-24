@@ -4,6 +4,12 @@
 import time
 from typing import Dict, Any, List
 from app.services.gemini_client import GeminiClient
+from app.services.review_prompts import (
+    AGENT_A_INSTRUCTION as SHARED_AGENT_A_INSTRUCTION,
+    AGENT_B_INSTRUCTION as SHARED_AGENT_B_INSTRUCTION,
+    build_agent_a_prompt,
+    build_agent_b_prompt,
+)
 from app.logger import get_logger
 
 logger = get_logger(__name__)
@@ -12,31 +18,8 @@ logger = get_logger(__name__)
 class MultiAgentReviewer:
     """Agent A（書類生成）とAgent B（倫理審査委員）の2回応酬を制御"""
     
-    AGENT_A_INSTRUCTION = """あなたは倫理審査書類を作成するAIエージェントです。
-以下の役割を持ちます：
-- インフォームドコンセントの妥当性チェック
-- リスクと対策の整合性確認
-- 個人情報保護の適切性チェック
-- 除外基準の明確さ確認
-- 書類間の一貫性確保
-
-Agent B（倫理審査委員シミュレート）からの指摘を受けて、書類を改善してください。
-標準より厳しめの基準で書類を作成し、承認率を高めることが目標です。"""
-
-    AGENT_B_INSTRUCTION = """あなたは筑波大学の倫理審査委員会の委員をシミュレートするAIエージェントです。
-以下の視点で厳格に審査してください：
-- 研究計画の妥当性（目的・方法・仮説の論理的整合性）
-- 実験工程の安全性（危険な手順がないか）
-- 対象者保護（不当なリスクを負わせていないか）
-- 倫理的問題点（見落としがちな問題の指摘）
-
-特に以下の厳格審査基準（SR1-SR6）を確認してください：
-- SR1: リスク記述の網羅性（「無」選択時も想定外リスクの記述があるか）
-- SR2: 対策の具体性（回避策が具体的なステップで記述されているか）
-- SR3: 緊急時対応（緊急停止手順、連絡先、対応フローの明記）
-- SR4: 除外基準の妥当性（妊婦、持病等の除外が適切か）
-- SR5: 同意撤回手続き（同意撤回時のデータ削除手順が明確か）
-- SR6: 参加者保護（不利益を被らない旨が明記されているか）"""
+    AGENT_A_INSTRUCTION = SHARED_AGENT_A_INSTRUCTION
+    AGENT_B_INSTRUCTION = SHARED_AGENT_B_INSTRUCTION
 
     def __init__(self, client: GeminiClient):
         self.client = client
@@ -50,31 +33,7 @@ Agent B（倫理審査委員シミュレート）からの指摘を受けて、�
         logger.info("Agent B (審査委員): レビュー開始")
         start_time = time.time()
         
-        prompt = f"""以下の倫理審査申請書を審査してください。
-
-# 研究計画
-{research_plan}
-
-# 申請書データ
-{form_data}
-
-# 出力形式（JSON）
-{{
-    "issues": [
-        {{
-            "id": "issue_1",
-            "category": "risk",
-            "severity": "major",
-            "description": "指摘内容",
-            "suggestion": "改善提案",
-            "field_id": "4.1"
-        }}
-    ],
-    "summary": "総評"
-}}
-
-category: risk, consent, privacy, procedure, ethics のいずれか
-severity: critical, major, minor のいずれか"""
+        prompt = build_agent_b_prompt(form_data, research_plan)
 
         result = await self.client.generate_json(prompt, self.AGENT_B_INSTRUCTION)
         elapsed = time.time() - start_time
@@ -94,17 +53,7 @@ severity: critical, major, minor のいずれか"""
         logger.info(f"Agent A (起案者): 修正開始 (指摘: {len(issues)}件)")
         start_time = time.time()
         
-        prompt = f"""以下の指摘事項を反映して、申請書データを修正してください。
-
-# 現在の申請書データ
-{form_data}
-
-# 指摘事項
-{issues}
-
-# 出力形式（JSON）
-修正後の申請書データ全体をJSON形式で出力してください。
-修正した箇所には "_revised": true を追加してください。"""
+        prompt = build_agent_a_prompt(form_data, issues)
 
         result = await self.client.generate_json(prompt, self.AGENT_A_INSTRUCTION)
         elapsed = time.time() - start_time
