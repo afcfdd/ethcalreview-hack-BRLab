@@ -96,7 +96,7 @@ def _normalize_facility_type(value: Any) -> str:
 
 
 def _default_storage_location(rooms: list[str]) -> str:
-    room_text = rooms[0] if rooms else "3M211"
+    room_text = rooms[0] if rooms else "3F224"
     return f"研究室({room_text})にて管理されたノートパソコン"
 
 

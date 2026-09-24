@@ -10,21 +10,21 @@ from pydantic_settings import BaseSettings
 
 
 class LaboratorySettings(BaseModel):
-    name: str = "善甫研究室"
+    name: str = "松本研究室"
     building: str = "総合研究棟B"
-    room: str = "3M211"
+    room: str = "3F224"
 
 
 class InvestigatorSettings(BaseModel):
-    name: str = "善甫 啓一"
+    name: str = "松本 啓吾"
     affiliation: str = "筑波大学 システム情報系"
-    position: str = "准教授"
-    email: str = "zempo@iit.tsukuba.ac.jp"
-    phone: str = "029-853-5338"
+    position: str = "助教"
+    email: str = "matsumoto@iit.tsukuba.ac.jp"
+    phone: str = "029-853-6425"
 
 
 class ExperimentConductorSettings(BaseModel):
-    phone: str = "029-853-6185"
+    phone: str = "029-853-6425"
 
 
 class EthicsCommitteeSettings(BaseModel):
