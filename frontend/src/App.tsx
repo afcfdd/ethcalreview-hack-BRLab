@@ -99,9 +99,9 @@ const defaultAppConfig: ApplicationFormConfig = {
   retentionPeriod: '10years',
   hasAnonymization: true,
   hasCorrespondenceTable: true,
-  storageLocation: '研究室(3F224)にて管理されたノートパソコン',  // lab_defaults.json から
+  storageLocation: '研究室(3D402)にて管理されたノートパソコン',  // lab_defaults.json から
   dataManager: '松本 啓吾',  // lab_defaults.json から
-  managementMethod: 'ノートパソコンの使用を関係者のみとし、結果の解析はネットに接続されない状態で行う。また、暗号化およびパスワード保護を用いることによりデータを保護する。同意書等の紙媒体については研究室(3F224)の鍵付き棚に保管し、鍵は管理責任者が管理する。',
+  managementMethod: 'ノートパソコンの使用を関係者のみとし、結果の解析はネットに接続されない状態で行う。また、暗号化およびパスワード保護を用いることによりデータを保護する。同意書等の紙媒体については研究室(3D402)の鍵付き棚に保管し、鍵は管理責任者が管理する。',
   disposalMethod: '研究対象者からの実験に関するデータの破棄が申請された場合は直ちに研究対象者のデータを破棄する。また、研究成果発表から10年が経過した場合、データの保存しているSSDを初期化し、データの復元をできないようにして処分する。同意書等の紙媒体についてはシュレッダーにかけた上で破棄し、復元できないように処分する',
 };
 
@@ -221,7 +221,6 @@ function App() {
       fundingSource: budgetPreset?.source || prev.fundingSource,
       fundingPI: preset.name || prev.fundingPI,
       fundingProjectName: budgetPreset?.project_name || prev.fundingProjectName,
-      storageLocation: rooms[0] ? `研究室(${rooms[0]})` : prev.storageLocation,
       dataManager: preset.name || prev.dataManager,
       domainName: submissionPreset?.label || prev.domainName,
       domainHeadName: domainHead || prev.domainHeadName,
@@ -250,7 +249,6 @@ function App() {
       ...prev,
       roomPresetId: preset.id,
       facilityName: preset.rooms.join(', '),
-      storageLocation: preset.rooms[0] ? `研究室(${preset.rooms[0]})` : prev.storageLocation,
     }));
   }, [presets]);
 
@@ -295,7 +293,7 @@ function App() {
     if (!analysisResult) return;
 
     // 謝礼計算: 設定の単価 × 所要時間 (budget.hourly_rate または reward.baseAmountPer60Min)
-    const hourlyRate = settings.budget?.hourly_rate ?? settings.reward?.baseAmountPer60Min ?? 1000;
+    const hourlyRate = settings.budget?.hourly_rate ?? settings.reward?.baseAmountPer60Min ?? 1230;
     const rewardAmount = Math.round(hourlyRate * (analysisResult.duration_minutes / 60));
 
     const formData: FormData = {
