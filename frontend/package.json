@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "研究倫理審査書類の生成支援Webアプリ",
-  "author": "Zempo Lab",
+  "author": "Matsumoto Lab",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",

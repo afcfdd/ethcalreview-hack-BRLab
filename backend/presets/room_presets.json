@@ -1,10 +1,9 @@
 [
   {
-    "id": "systems_information_default_rooms",
-    "label": "システム情報系 標準実験室",
+    "id": "brlab_experiment_room",
+    "label": "松本研究室 実験室",
     "rooms": [
-      "3M211",
-      "3G214"
+      "3F224"
     ],
     "enabled": true,
     "version": 1,
