@@ -7,17 +7,17 @@ const API_KEY_STORAGE = 'geminiApiKey';
 
 const defaultSettings: Settings = {
     laboratory: {
-        name: '松本研究室',
+        name: '善甫研究室',
         building: '総合研究棟B',
-        room: '3F224',
+        room: '3M211',
     },
     submission_destination: 'システム情報系',
     principal_investigator: {
-        name: '松本 啓吾',
+        name: '善甫 啓一',
         affiliation: '筑波大学 システム情報系',
-        position: '助教',
-        email: 'matsumoto@iit.tsukuba.ac.jp',
-        phone: '029-853-6425',
+        position: '准教授',
+        email: 'zempo@iit.tsukuba.ac.jp',
+        phone: '029-853-5338',
     },
     ethics_committee: {
         name: '筑波大学 システム情報系 研究倫理委員会',
@@ -36,13 +36,13 @@ const defaultSettings: Settings = {
         provider: 'openai',
         apiKey: '',
     },
-    labName: '松本研究室',
+    labName: '善甫研究室',
     principalInvestigator: {
-        name: '松本 啓吾',
+        name: '善甫 啓一',
         affiliation: '筑波大学 システム情報系',
-        position: '助教',
-        email: 'matsumoto@iit.tsukuba.ac.jp',
-        phone: '029-853-6425',
+        position: '准教授',
+        email: 'zempo@iit.tsukuba.ac.jp',
+        phone: '029-853-5338',
     },
     ethicsCommittee: '筑波大学 システム情報系 研究倫理委員会',
     reward: {

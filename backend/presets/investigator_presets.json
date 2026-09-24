@@ -1,5 +1,27 @@
 [
   {
+    "id": "zempo_keiichi",
+    "label": "善甫 啓一",
+    "name": "善甫 啓一",
+    "affiliation": "筑波大学システム情報系",
+    "position": "准教授",
+    "email": "zempo@iit.tsukuba.ac.jp",
+    "tel": "029-853-5338",
+    "default_rooms": [
+      "3M211",
+      "3G214"
+    ],
+    "default_storage_location": "研究室(3M211)にて管理されたノートパソコン",
+    "default_management_method": "ノートパソコンの使用を研究室のみに限定し、結果の解析はネットに接続されていない状態で行う。また、暗号化およびパスワード保護を用いることによりデータを保護する。同意書等の紙媒体については研究室(3M211)の鍵付き棚に保管し、鍵は管理責任者が管理する。",
+    "default_budget_ids": [
+      "default_reward"
+    ],
+    "default_submission_preset_id": "systems_information",
+    "enabled": true,
+    "version": 1,
+    "updated_at": "2026-05-02T00:00:00"
+  },
+  {
     "id": "matsumoto_keigo",
     "label": "松本 啓吾",
     "name": "松本 啓吾",
@@ -10,6 +32,8 @@
     "default_rooms": [
       "3F224"
     ],
+    "default_storage_location": "研究室(3D402)にて管理されたノートパソコン",
+    "default_management_method": "ノートパソコンの使用を研究室のみに限定し、結果の解析はネットに接続されていない状態で行う。また、暗号化およびパスワード保護を用いることによりデータを保護する。同意書等の紙媒体については研究室(3D402)の鍵付き棚に保管し、鍵は管理責任者が管理する。",
     "default_budget_ids": [
       "default_reward"
     ],

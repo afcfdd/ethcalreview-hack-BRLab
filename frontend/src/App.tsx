@@ -86,9 +86,9 @@ const defaultAppConfig: ApplicationFormConfig = {
   similarApplicationExists: false,
   subInvestigators: [],
   facilityType: 'a',
-  facilityName: '3F224',
+  facilityName: '3M211',
   fundingSource: '(教研)教研-重点-人材養成機能強化経費',  // lab_defaults.json から
-  fundingPI: '松本 啓吾',  // lab_defaults.json から
+  fundingPI: '善甫 啓一',  // lab_defaults.json から
   fundingProjectName: '',
   genomeRelated: false,
   conflictOfInterest: false,
@@ -99,13 +99,13 @@ const defaultAppConfig: ApplicationFormConfig = {
   retentionPeriod: '10years',
   hasAnonymization: true,
   hasCorrespondenceTable: true,
-  storageLocation: '研究室(3D402)にて管理されたノートパソコン',  // lab_defaults.json から
-  dataManager: '松本 啓吾',  // lab_defaults.json から
-  managementMethod: 'ノートパソコンの使用を関係者のみとし、結果の解析はネットに接続されない状態で行う。また、暗号化およびパスワード保護を用いることによりデータを保護する。同意書等の紙媒体については研究室(3D402)の鍵付き棚に保管し、鍵は管理責任者が管理する。',
+  storageLocation: '研究室(3M211)にて管理されたノートパソコン',  // lab_defaults.json から
+  dataManager: '善甫 啓一',  // lab_defaults.json から
+  managementMethod: 'ノートパソコンの使用を関係者のみとし、結果の解析はネットに接続されない状態で行う。また、暗号化およびパスワード保護を用いることによりデータを保護する。同意書等の紙媒体については研究室(3M211)の鍵付き棚に保管し、鍵は管理責任者が管理する。',
   disposalMethod: '研究対象者からの実験に関するデータの破棄が申請された場合は直ちに研究対象者のデータを破棄する。また、研究成果発表から10年が経過した場合、データの保存しているSSDを初期化し、データの復元をできないようにして処分する。同意書等の紙媒体についてはシュレッダーにかけた上で破棄し、復元できないように処分する',
 };
 
-const DEFAULT_LAB_CONDUCTOR_TEL = '029-853-6425';
+const DEFAULT_ZEMPO_LAB_CONDUCTOR_TEL = '029-853-6185';
 
 const extractValidationIssues = (detail: unknown): ValidationIssue[] => {
   if (!detail || typeof detail !== 'object') {
@@ -221,12 +221,14 @@ function App() {
       fundingSource: budgetPreset?.source || prev.fundingSource,
       fundingPI: preset.name || prev.fundingPI,
       fundingProjectName: budgetPreset?.project_name || prev.fundingProjectName,
+      storageLocation: preset.default_storage_location || prev.storageLocation,
+      managementMethod: preset.default_management_method || prev.managementMethod,
       dataManager: preset.name || prev.dataManager,
       domainName: submissionPreset?.label || prev.domainName,
       domainHeadName: domainHead || prev.domainHeadName,
       subInvestigators: prev.subInvestigators.map((inv) => ({
         ...inv,
-        tel: inv.tel || DEFAULT_LAB_CONDUCTOR_TEL,
+        tel: inv.tel || DEFAULT_ZEMPO_LAB_CONDUCTOR_TEL,
       })),
     }));
   }, [presets]);
@@ -249,6 +251,7 @@ function App() {
       ...prev,
       roomPresetId: preset.id,
       facilityName: preset.rooms.join(', '),
+      storageLocation: preset.rooms[0] ? `研究室(${preset.rooms[0]})` : prev.storageLocation,
     }));
   }, [presets]);
 
@@ -841,7 +844,7 @@ function App() {
                         onClick={() => {
                           setAppConfig(prev => ({
                             ...prev,
-                            subInvestigators: [...prev.subInvestigators, { affiliation: '', position: '', name: '', tel: DEFAULT_LAB_CONDUCTOR_TEL }]
+                            subInvestigators: [...prev.subInvestigators, { affiliation: '', position: '', name: '', tel: DEFAULT_ZEMPO_LAB_CONDUCTOR_TEL }]
                           }));
                         }}
                         style={{ marginTop: '0.5rem' }}
@@ -1097,7 +1100,7 @@ function App() {
                         <Input
                           value={appConfig.dataManager}
                           onChange={(e) => setAppConfig(prev => ({ ...prev, dataManager: e.target.value }))}
-                          placeholder="例: 松本 啓吾"
+                          placeholder="例: 善甫 啓一"
                         />
                         {renderFieldIssues('data.manager')}
                       </div>

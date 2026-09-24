@@ -1,15 +1,16 @@
 {
   "lab_info": {
-    "name": "松本研究室",
-    "pi_name": "松本 啓吾",
+    "name": "善甫研究室",
+    "pi_name": "善甫 啓一",
     "pi_affiliation": "筑波大学 システム情報系",
-    "pi_position": "助教",
-    "pi_email": "matsumoto@iit.tsukuba.ac.jp",
-    "pi_phone": "029-853-6425",
-    "pi_extension": "6425",
-    "lab_room": "3F224",
+    "pi_position": "准教授",
+    "pi_email": "zempo@iit.tsukuba.ac.jp",
+    "pi_phone": "029-853-5338",
+    "pi_extension": "5338",
+    "lab_room": "3M211",
     "experimental_rooms": [
-      "3F224"
+      "3M211",
+      "3G214"
     ]
   },
   "domain_head": {
@@ -22,13 +23,13 @@
   "funding": {
     "source": "運営費交付金",
     "account_number": "",
-    "pi_name": "松本 啓吾"
+    "pi_name": "善甫 啓一"
   },
   "application_defaults": {
     "department": "システム情報系",
     "recipient": "システム情報系長",
     "facility_type": "a",
-    "facility_name": "3F224",
+    "facility_name": "3M211",
     "epidemiology_related": false,
     "conflict_of_interest": false,
     "insurance_type": "国立大学法人総合損害保険",
@@ -60,8 +61,8 @@
   },
   "data_management_defaults": {
     "retention_period": "10年",
-    "storage_location": "研究室(3D402)にて管理されたノートパソコン",
-    "manager": "松本 啓吾",
+    "storage_location": "研究室(3M211)にて管理されたノートパソコン",
+    "manager": "善甫 啓一",
     "management_method": "ノートパソコンの使用を関係者のみに限定し、結果の解析はネットワークに接続されていない状態で行う。また、暗号化およびパスワード保護を用いる。",
     "disposal_method": "研究対象者から破棄の申請があった場合は直ちに当該データを破棄する。研究成果発表から10年が経過した場合、保存媒体を初期化し、復元できないように処分する。紙媒体はシュレッダーで破棄する。"
   },

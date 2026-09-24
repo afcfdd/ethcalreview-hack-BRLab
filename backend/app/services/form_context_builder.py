@@ -95,8 +95,9 @@ def _normalize_facility_type(value: Any) -> str:
     return mapping.get(str(value or "single"), "single")
 
 
-def _default_storage_location() -> str:
-    return "研究室(3D402)にて管理されたノートパソコン"
+def _default_storage_location(rooms: list[str]) -> str:
+    room_text = rooms[0] if rooms else "3M211"
+    return f"研究室({room_text})にて管理されたノートパソコン"
 
 
 DEFAULT_DATA_MANAGEMENT_METHOD = (
@@ -453,7 +454,7 @@ def build_generation_context(
             "retention_period": _pick(form_data, "retentionPeriodText", "app_config.retentionReason", default=("" if retention_period_choice == "less" else "当該論文等の発表後10年間")),
             "anonymization_enabled": _to_bool(_pick(form_data, "hasAnonymization", "app_config.hasAnonymization", default=True), True),
             "correspondence_table_enabled": _to_bool(_pick(form_data, "hasCorrespondenceTable", "app_config.hasCorrespondenceTable", default=True), True),
-            "storage_location": _pick(form_data, "storageLocation", "app_config.storageLocation", default=_default_storage_location()),
+            "storage_location": _pick(form_data, "storageLocation", "app_config.storageLocation", default=_default_storage_location(rooms)),
             "manager": _pick(form_data, "dataManager", "app_config.dataManager", default=principal_investigator["name"]),
             "management_method": _pick(form_data, "managementMethod", "app_config.managementMethod", default=DEFAULT_DATA_MANAGEMENT_METHOD),
             "disposal_method": _pick(form_data, "disposalMethod", "app_config.disposalMethod", default=DEFAULT_DATA_DISPOSAL_METHOD),
